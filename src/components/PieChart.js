@@ -1,18 +1,11 @@
 import React from 'react';
 import {PieChart, Pie, Cell, Tooltip, Legend} from 'recharts';
-import chroma from 'chroma-js';
 
-// const data = [
-//     {name: 'Group A', value: 400},
-//     {name: 'Group B', value: 300},
-//     {name: 'Group C', value: 300},
-//     {name: 'Group D', value: 200},
-// ];
+
+const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042'];
 
 
 const PieDisplay = ({data}) => {
-
-    console.log(data)
 
     // Convert the object to an array suitable for Recharts
     const dataArray = Object.entries(data).map(([name, value]) => ({
@@ -20,19 +13,17 @@ const PieDisplay = ({data}) => {
         value
     }));
 
-    console.log(dataArray)
-
-    const colors = chroma.scale(['#6a1b9a', '#ffeb3b']).mode('lch').colors(dataArray.length);
+    const colors = COLORS.slice(0, data.length)
 
     return (
-        <PieChart width={400} height={400}>
+        <PieChart width={300} height={300}>
             <Pie
                 dataKey="value"
                 isAnimationActive={false}
                 data={dataArray}
-                cx={200}
-                cy={200}
-                outerRadius={100}
+                cx={150}
+                cy={150}
+                outerRadius={80}
                 fill="#8884d8"
                 label
             >

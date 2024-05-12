@@ -1,12 +1,15 @@
 import './App.css';
-import {RandomizationList} from "./components/RandomizationList";
+import {AppLayout} from "./components/layout/AppLayout";
+import {BrowserRouter} from "react-router-dom";
 
 function App() {
-  return (
-    <div>
-      <RandomizationList></RandomizationList>
-    </div>
-  );
+    return (
+        <div>
+            <BrowserRouter>
+                <AppLayout/>
+            </BrowserRouter>
+        </div>
+    );
 }
 
 export default App;

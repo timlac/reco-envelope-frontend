@@ -1,13 +1,13 @@
-/* Flexbox layout */
-.cards-flex-container {
-    display: flex;
-    /*justify-content: space-between; !* Adjust to 'space-between' for better spacing *!*/
-    /*align-items: center; !* Vertically center items *!*/
-    padding: 0 10px; /* Padding on sides to ensure some spacing */
-    width: 100%; /* Ensure the container takes full width */
-}
-
-/*.card-item {*/
-/*    !*flex: 1; !* Makes each card flex to fill the container *!*!*/
-/*    !*margin: 10px; !* Optional: Adds margin between cards *!*!*/
+/*!* Flexbox layout *!*/
+/*.cards-flex-container {*/
+/*    display: flex;*/
+/*    !*justify-content: space-between; !* Adjust to 'space-between' for better spacing *!*!*/
+/*    !*align-items: center; !* Vertically center items *!*!*/
+/*    padding: 0 10px; !* Padding on sides to ensure some spacing *!*/
+/*    width: 100%; !* Ensure the container takes full width *!*/
 /*}*/
+
+/*!*.card-item {*!*/
+/*!*    !*flex: 1; !* Makes each card flex to fill the container *!*!*!*/
+/*!*    !*margin: 10px; !* Optional: Adds margin between cards *!*!*!*/
+/*!*}*!*/
