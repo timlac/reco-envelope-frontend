@@ -1,8 +1,7 @@
 import {Button, Card, Col, Form, Input, Row, Select} from "antd";
 import {useEffect, useState} from "react";
-import {all} from "axios";
 
-export const RandomizationListForm = ({onFormSend}) => {
+export const RandomizationListForm = ({onFormSend, isLoading}) => {
     const [treatmentGroups, setTreatmentGroups] = useState([]);
     const [allocationRatios, setAllocationRatios] = useState({});
 
@@ -87,7 +86,7 @@ export const RandomizationListForm = ({onFormSend}) => {
                 </Form.Item>
 
                 <Form.Item>
-                    <Button type="primary" htmlType="submit">
+                    <Button type="primary" htmlType="submit" disabled={isLoading}>
                         Generate List
                     </Button>
                 </Form.Item>
