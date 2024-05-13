@@ -1,6 +1,6 @@
 import {Layout, Menu} from 'antd';
 import {Route, Link, Routes} from 'react-router-dom';
-import {RandomizationList} from "../RandomizationList";
+import {RandomizationList} from "../randomizer/RandomizationList";
 import {RetrieveItems} from "../RetrieveItems";
 import {useEffect, useState} from "react";
 import "./AppLayout.css"

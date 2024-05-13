@@ -1,5 +1,5 @@
 import {Button, Card, Form, message} from "antd";
-import {api} from "../services/api";
+import {api} from "../../services/api";
 import {useState} from "react";
 import CopyableText from "./CopyableText";
 
@@ -15,10 +15,15 @@ export const UploadForm = ({generatedList, waitingForRandomizer}) => {
             .then(response => {
                 console.log(response)
                 setHash(response.data.group_list_id)
-                message.success("upload successful")
+                message.success("Upload successful!")
             })
-            .then(() => setWaitingForUpload(false))
-            .catch((error) => console.error("API error:", error))
+            .catch((error) => {
+                console.error("API error:", error)
+                message.error("Something went wrong!")
+            })
+            .finally(() => {
+                setWaitingForUpload(false)
+            })
     }
 
     return (<div>
