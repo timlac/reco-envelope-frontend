@@ -1,7 +1,7 @@
 import {Layout, Menu} from 'antd';
 import {Route, Link, Routes} from 'react-router-dom';
 import {RandomizationList} from "../randomizer/RandomizationList";
-import {RetrieveItems} from "../RetrieveItems";
+import {RetrieveItems} from "../retrieval/RetrieveItems";
 import {useEffect, useState} from "react";
 import "./AppLayout.css"
 import {DotChartOutlined} from "@ant-design/icons";
@@ -38,6 +38,7 @@ export const AppLayout = () => {
                     <Routes>
                         <Route exact path="" element={<RandomizationList/>}/>
                         <Route path="retrieve_items" element={<RetrieveItems/>}/>
+                        {/*<Route path="retrieve_items/:group_list_id" element={<RetrieveItems/>}/>*/}
                     </Routes>
                 </div>
             </Content>

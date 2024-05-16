@@ -37,3 +37,6 @@ const PieDisplay = ({data}) => {
     );
 }
 export default PieDisplay;
+
+
+
