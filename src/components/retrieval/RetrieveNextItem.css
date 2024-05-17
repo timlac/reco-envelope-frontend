@@ -1,0 +1,12 @@
+.new-row {
+  animation: highlight 4s ease-out;
+}
+
+@keyframes highlight {
+  from {
+    background-color: #98fb98;
+  }
+  to {
+    background-color: inherit;
+  }
+}

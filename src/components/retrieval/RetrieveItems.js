@@ -1,32 +1,51 @@
-import {Button, Card, Form, Input, message, Table} from "antd";
+import {Button, Card, Form, Input, message, Space, Table} from "antd";
 import {api} from "../../services/api";
-import {useEffect, useState} from "react";
+import {useCallback, useEffect, useState} from "react";
 import {GetNextItem} from "./GetNextItem";
 
+import "./RetrieveNextItem.css"
 
-export const RetrieveItems = () => {
+export const RetrieveItems = (callback, deps) => {
 
     const [data, setData] = useState({})
 
-    const [nextItem, setNextItem] = useState(null)
     const [groupListId, setGroupListId] = useState(null)
+
+    const [validGroupListId, setValidGroupListId] = useState(false)
+
     const [isLoading, setIsLoading] = useState(false)
+
+    const [reversedListItems, setReversedListItems] = useState([])
+    const [prevListLength, setPrevListLength] = useState(0);
+
 
     function onSubmit(values) {
         console.log(values.group_list_id)
+        setPrevListLength(1000)
         setGroupListId(values.group_list_id)
     }
 
+    const getGroupList = useCallback(async ( ) => {
+        if (groupListId) {
+            try {
+                const resp = await api.get(`/group_lists/${groupListId}?only_retrieved=1`)
+                setData(resp.data)
+                setReversedListItems([...resp.data.group_list_items].reverse())
+                setValidGroupListId(true)
+                message.success("Successfully retrieved list")
+            } catch (err) {
+                const errorMessage = err.response?.data || "An unexpected error occurred";
+                message.error(`Error: ${errorMessage}`);
+                setValidGroupListId(false)
+                setReversedListItems([])
+            }
+        }
+    }, [groupListId])
 
     useEffect(() => {
-        if (groupListId) {
-            api.get(`/group_lists/${groupListId}?only_retrieved=1`)
-                .then(resp => {
-                    console.log(resp)
-                    setData(resp.data)
-                })
-        }
-    }, [groupListId]);
+        console.log("get group list id triggered")
+        getGroupList()
+    }, [groupListId, getGroupList]);
 
 
     function onGetNextItem(values) {
@@ -42,9 +61,13 @@ export const RetrieveItems = () => {
                     console.log(response)
                     message.info(response.data.message)
                 } else {
-                    setNextItem(response.data)
+                    console.log(response.data)
                     message.success("Item Retrieved!")
                 }
+            })
+            .then(() => {
+                setPrevListLength(reversedListItems.length);
+                getGroupList();
             })
             .catch((error) => {
                 console.error("API error:", error);
@@ -58,6 +81,11 @@ export const RetrieveItems = () => {
 
 
     const columns = [
+        {
+            title: 'Index',
+            key: 'index',
+            render: (text, record, index) => reversedListItems.length - index
+        },
         {
             title: 'Retrieved At',
             dataIndex: 'retrieved_at',
@@ -79,48 +107,63 @@ export const RetrieveItems = () => {
 
     return (
         <div>
-            <Card title="Retrieve List Items">
-                <Form
-                    onFinish={onSubmit}
-                    layout="inline"
-                >
-                    <Form.Item
-                        name="group_list_id"
-                        label="Retrieval Code"
-                        rules={[{required: true, message: "Please input retrieval code"}]}
+            <Card title="Retrieval Form">
 
+                <Space direction="vertical" size="middle" style={{display: 'flex'}}>
+
+                    <p>Start by inserting your saved retrieval code:</p>
+                    <Form
+                        onFinish={onSubmit}
+                        layout="inline"
                     >
-                        <Input>
+                        <Form.Item
+                            name="group_list_id"
+                            label="Retrieval Code"
+                            rules={[{required: true, message: "Please input retrieval code"}]}
 
-                        </Input>
-                    </Form.Item>
-                    <Form.Item>
-                        <Button type="primary" htmlType="submit" disabled={isLoading}>
-                            Retrieve
-                        </Button>
-                    </Form.Item>
-                </Form>
+                        >
+                            <Input>
+
+                            </Input>
+                        </Form.Item>
+                        <Form.Item>
+                            <Button type="primary" htmlType="submit" disabled={isLoading}>
+                                Retrieve
+                            </Button>
+                        </Form.Item>
+                    </Form>
+
+                    <p>Once you have inserted a valid code above you can start assigning items:</p>
+                    <Form
+                        onFinish={onGetNextItem}
+                        layout="inline"
+                    >
+                        <Form.Item
+                            name="participant_id"
+                            label="Participant ID (optional)"
+                        >
+                            <Input>
+
+                            </Input>
+                        </Form.Item>
+                        <Form.Item>
+                            <Button type="primary" htmlType="submit" disabled={!validGroupListId}>
+                                Assign Next Item
+                            </Button>
+                        </Form.Item>
+                    </Form>
+                </Space>
             </Card>
+
             <>
-                {data &&
-                <Card title="Get Next Item">
-                    <GetNextItem onSubmit={onGetNextItem}></GetNextItem>
-                    {nextItem &&
-                        <Card>
-                            <p>Group: <b>{nextItem.group_list_item.data.group}
-                            </b></p>
-                            <p>Group: <b>{nextItem.participant_id}
-                            </b></p>
-                            <p>Retrieved at: <b>{nextItem.retrieved_at}
-                            </b></p>
-                            <p>Index: <b>{nextItem.group_list_item_index}
-                            </b></p>
-                        </Card>
-                    }
-                </Card>
-            }
+
+                <Table
+                    dataSource={reversedListItems}
+                    columns={columns}
+                    rowClassName={(record, index) =>
+                        index < (reversedListItems.length - prevListLength) ? 'new-row' : ''}/>;
             </>
-            <Table dataSource={data.group_list_items} columns={columns}/>;
+
         </div>
     )
 }

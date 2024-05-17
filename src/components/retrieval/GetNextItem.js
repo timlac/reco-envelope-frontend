@@ -8,10 +8,9 @@ export const GetNextItem = ({onSubmit}) => {
             onFinish={onSubmit}
             layout="inline"
         >
-
             <Form.Item
                 name="participant_id"
-                label="Participant ID (optional)"
+                label="Assign Participant ID (optional)"
             >
                 <Input>
 
