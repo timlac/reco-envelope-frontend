@@ -1,5 +1,5 @@
 .new-row {
-  animation: highlight 4s ease-out;
+  animation: highlight 5s ease-out;
 }
 
 @keyframes highlight {

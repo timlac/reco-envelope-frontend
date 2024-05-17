@@ -1,24 +1,23 @@
 import {Button, Card, Form, Input, message, Space, Table} from "antd";
 import {api} from "../../services/api";
-import {useCallback, useEffect, useState} from "react";
+import {useState} from "react";
 
 import "./RetrieveNextItem.css"
+import {ItemDisplay} from "./ItemDisplay";
 
 export const RetrieveItems = (callback, deps) => {
-
-    const [data, setData] = useState({})
 
     const [groupListId, setGroupListId] = useState(null)
 
     const [isLoading, setIsLoading] = useState(false)
 
     const [reversedListItems, setReversedListItems] = useState([])
-    const [prevListLength, setPrevListLength] = useState(0);
 
+    const [highLightIndex, setHighLightIndex] = useState(0);
 
     function onSubmit(values) {
         console.log(values.group_list_id)
-        setPrevListLength(1000)
+        setHighLightIndex(0)
         getGroupList(values.group_list_id, true)
             .then(() => {
                 setGroupListId(values.group_list_id)
@@ -34,7 +33,7 @@ export const RetrieveItems = (callback, deps) => {
         if (id) {
             try {
                 const resp = await api.get(`/group_lists/${id}?only_retrieved=1`)
-                setData(resp.data)
+                console.log(resp)
                 setReversedListItems([...resp.data.group_list_items].reverse())
             } catch (err) {
                 if (!suppressErrors) {
@@ -50,11 +49,15 @@ export const RetrieveItems = (callback, deps) => {
 
     function onGetNextItem(values) {
 
+        console.log(values)
+
         let body = {
             participant_id: values.participant_id,
         }
 
-        api.post(`group_lists/${groupListId}/next_item`, body)
+        console.log(body)
+
+        api.post(`group_lists/${groupListId}/next_item`, values)
             .then(response => {
                 console.log(response)
                 if (response.data.status === "finished") {
@@ -62,11 +65,11 @@ export const RetrieveItems = (callback, deps) => {
                     message.info(response.data.message)
                 } else {
                     console.log(response.data)
+                    setHighLightIndex(response.data.group_list_item_index + 1)
                     message.success("Item Assigned!")
                 }
             })
             .then(() => {
-                setPrevListLength(reversedListItems.length)
                 getGroupList(groupListId)
             })
             .catch((error) => {
@@ -78,32 +81,6 @@ export const RetrieveItems = (callback, deps) => {
                 setIsLoading(false)
             })
     }
-
-
-    const columns = [
-        {
-            title: 'Index',
-            key: 'index',
-            render: (text, record, index) => reversedListItems.length - index
-        },
-        {
-            title: 'Retrieved At',
-            dataIndex: 'retrieved_at',
-            key: 'retrieved_at',
-        },
-        {
-            title: 'Participant ID',
-            dataIndex: 'participant_id',
-            key: 'participant_id',
-        },
-        {
-            title: 'Group',
-            dataIndex: 'data',
-            key: 'group',
-            render: item => item.group
-
-        },
-    ];
 
     return (
         <div>
@@ -141,6 +118,7 @@ export const RetrieveItems = (callback, deps) => {
                         <Form.Item
                             name="participant_id"
                             label="Participant ID (optional)"
+                            initialValue={""}
                         >
                             <Input>
 
@@ -155,15 +133,10 @@ export const RetrieveItems = (callback, deps) => {
                 </Space>
             </Card>
 
-            <>
-
-                <Table
-                    dataSource={reversedListItems}
-                    columns={columns}
-                    rowClassName={(record, index) =>
-                        index < (reversedListItems.length - prevListLength) ? 'new-row' : ''}/>;
-            </>
-
+            <ItemDisplay
+                highLightIndex={highLightIndex}
+                reversedListItems={reversedListItems}
+            />
         </div>
     )
 }
